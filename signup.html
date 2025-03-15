@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1E88E5, #42A5F5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 15px 50px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+            transform: scale(1);
+            animation: pop-up 0.5s ease-out;
+        }
+        h2 { 
+            margin-bottom: 15px; 
+            color: #333; 
+            font-size: 24px;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #1E88E5;
+            box-shadow: 0 0 10px rgba(30, 136, 229, 0.5);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: none;
+            background: #1E88E5;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(30, 136, 229, 0.2);
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #1565C0;
+            transform: translateY(-3px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        .google-btn {
+            background: #DB4437;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(219, 68, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+        .google-btn:hover {
+            background: #C1351E;
+            transform: translateY(-3px);
+        }
+        .switch {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .switch a {
+            color: #1E88E5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .switch a:hover { 
+            text-decoration: underline; 
+        }
+        #error-msg, #success-msg {
+            font-size: 14px;
+            margin-top: 10px;
+            animation: fade-in 0.5s ease-out;
+        }
+        #error-msg { color: red; }
+        #success-msg { color: green; }
+        @keyframes pop-up {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sign Up</h2>
+        <input type="text" id="signup-name" placeholder="Full Name" required>
+        <input type="email" id="signup-email" placeholder="Email Address" required>
+        <input type="password" id="signup-password" placeholder="Password (Min 6 characters)" required>
+        <input type="text" id="signup-phone" placeholder="Phone Number" required>
+        <button id="signup-btn">Sign Up</button>
+        <p id="error-msg"></p>
+        <p id="success-msg"></p>
+        <button class="google-btn" id="google-signUp">Sign Up with Google</button>
+        <p class="switch">Already have an account? <a href="index.html">Login</a></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfC5u-d7EN7WC5GGpRkYR3C-foYCceeH8",
+            authDomain: "number-2-29adf.firebaseapp.com",
+            projectId: "number-2-29adf",
+            storageBucket: "number-2-29adf.firebasestorage.app",
+            messagingSenderId: "869200935152",
+            appId: "1:869200935152:web:6dcc395aed094721ae6a35",
+            measurementId: "G-VGRRNGYMFM"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+    
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            // Do not redirect here. Let the sign-up logic handle it.
+        });
+    
+        const signupBtn = document.getElementById("signup-btn");
+        const googleSignupBtn = document.getElementById("google-signUp");
+        const errorMsg = document.getElementById("error-msg");
+        const successMsg = document.getElementById("success-msg");
+    
+        function validateInputs(name, email, password, phone) {
+            if (!name || !email || !password || !phone) {
+                return "All fields are required.";
+            }
+            if (!/\S+@\S+\.\S+/.test(email)) {
+                return "Enter a valid email.";
+            }
+            if (password.length < 6) {
+                return "Password must be at least 6 characters.";
+            }
+            if (!/^\d+$/.test(phone)) {
+                return "Phone number must contain only digits.";
+            }
+            return null;
+        }
+    
+        signupBtn.addEventListener("click", async () => {
+            const name = document.getElementById("signup-name").value.trim();
+            const email = document.getElementById("signup-email").value.trim();
+            const password = document.getElementById("signup-password").value.trim();
+            const phone = document.getElementById("signup-phone").value.trim();
+    
+            const error = validateInputs(name, email, password, phone);
+            if (error) {
+                errorMsg.innerText = error;
+                successMsg.innerText = "";
+                return;
+            }
+    
+            try {
+                // Create user with email and password
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+    
+                // Save user data to Firestore
+                await setDoc(doc(db, "users", user.uid), { name, email, phone });
+    
+                // Show success message
+                successMsg.innerText = "Account created successfully!";
+                errorMsg.innerText = "";
+    
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2000);
+            } catch (error) {
+                // Handle errors
+                console.error("Sign-Up Error:", error.message);
+                errorMsg.innerText = "Error: " + error.message;
+                successMsg.innerText = "";
+            }
+        });
+    
+        googleSignupBtn.addEventListener("click", async () => {
+            try {
+                // Sign in with Google
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+    
+                // Save user data to Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    name: user.displayName,
+                    email: user.email,
+                    phone: user.phoneNumber || "N/A"
+                }, { merge: true });
+    
+                // Redirect to dashboard
+                window.location.href = "index.html";
+            } catch (error) {
+                // Handle errors
+                console.error("Google Sign-Up Error:", error.message);
+                errorMsg.innerText = "Google Sign-Up Error: " + error.message;
+                successMsg.innerText = "";
+            }
+        });
+    </script>
+
+</body>
+</html>

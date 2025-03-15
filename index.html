@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1E88E5, #42A5F5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 15px 50px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+            transform: scale(1);
+            animation: pop-up 0.5s ease-out;
+        }
+        h2 { 
+            margin-bottom: 15px; 
+            color: #333; 
+            font-size: 24px;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #1E88E5;
+            box-shadow: 0 0 10px rgba(30, 136, 229, 0.5);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: none;
+            background: #1E88E5;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(30, 136, 229, 0.2);
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #1565C0;
+            transform: translateY(-3px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        .google-btn {
+            background: #DB4437;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(219, 68, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+        .google-btn:hover {
+            background: #C1351E;
+            transform: translateY(-3px);
+        }
+        .switch {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .switch a {
+            color: #1E88E5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .switch a:hover { 
+            text-decoration: underline; 
+        }
+        #error-msg {
+            font-size: 14px;
+            margin-top: 10px;
+            color: red;
+            animation: fade-in 0.5s ease-out;
+        }
+        @keyframes pop-up {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="Email Address" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button id="login-btn">Login</button>
+        <p id="error-msg"></p>
+        <button class="google-btn" id="google-login">Login with Google</button>
+        <p class="switch">Don't have an account? <a href="signup.html">Sign Up</a></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfC5u-d7EN7WC5GGpRkYR3C-foYCceeH8",
+            authDomain: "number-2-29adf.firebaseapp.com",
+            projectId: "number-2-29adf",
+            storageBucket: "number-2-29adf.firebasestorage.app",
+            messagingSenderId: "869200935152",
+            appId: "1:869200935152:web:6dcc395aed094721ae6a35",
+            measurementId: "G-VGRRNGYMFM"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+    
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            // Do not redirect here. Let the login logic handle it.
+        });
+    
+        const loginBtn = document.getElementById("login-btn");
+        const googleLoginBtn = document.getElementById("google-login");
+        const errorMsg = document.getElementById("error-msg");
+    
+        loginBtn.addEventListener("click", async () => {
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value.trim();
+    
+            // Validate inputs
+            if (!email || !password) {
+                errorMsg.innerText = "Please fill in all fields.";
+                return;
+            }
+    
+            try {
+                // Sign in with email and password
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log("User signed in successfully.");
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                // Handle errors
+                console.error("Login Error:", error.message);
+                switch (error.code) {
+                    case "auth/invalid-email":
+                        errorMsg.innerText = "Invalid email address.";
+                        break;
+                    case "auth/user-not-found":
+                    case "auth/wrong-password":
+                        errorMsg.innerText = "Incorrect email or password.";
+                        break;
+                    default:
+                        errorMsg.innerText = "An error occurred. Please try again.";
+                }
+            }
+        });
+    
+        googleLoginBtn.addEventListener("click", async () => {
+            try {
+                // Sign in with Google
+                await signInWithPopup(auth, provider);
+                console.log("User signed in with Google successfully.");
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                // Handle errors
+                console.error("Google Login Error:", error.message);
+                errorMsg.innerText = "Google login failed. Please try again.";
+            }
+        });
+    </script>
+
+</body>
+</html>
