@@ -1,196 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Cyberpunk Auth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --neon-cyan: #00f7ff;
+            --neon-pink: #ff00ff;
+            --cyber-black: #0a0a0a;
+            --hologram-blue: #00a3ff;
+            --terminal-text: #20c20e;
+            --particle-sparkle: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #1E88E5, #42A5F5);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: center;
+            background: linear-gradient(45deg, #000 0%, #0a0a2e 100%);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            animation: bg-pulse 20s infinite alternate;
         }
+
         .container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 15px 50px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            background: linear-gradient(135deg,
+                    rgba(0, 247, 255, 0.15) 0%,
+                    rgba(255, 0, 255, 0.1) 50%,
+                    rgba(0, 247, 255, 0.15) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.3),
+                0 0 20px rgba(255, 0, 255, 0.2) inset;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            backdrop-filter: blur(10px);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 20%,
+                    var(--neon-cyan) 50%,
+                    transparent 80%);
+            animation: rotate 6s linear infinite;
+            opacity: 0.15;
+        }
+
+        h2 {
+            color: var(--neon-cyan);
+            font-size: 2rem;
             text-align: center;
-            transform: scale(1);
-            animation: pop-up 0.5s ease-out;
+            margin-bottom: 1.8rem;
+            text-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+            font-weight: 300;
+            letter-spacing: 2px;
         }
-        h2 { 
-            margin-bottom: 15px; 
-            color: #333; 
-            font-size: 24px;
-            font-weight: 600;
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.8rem;
+            perspective: 1000px;
         }
+
+        .input-container {
+            position: relative;
+            background: rgba(10, 10, 10, 0.4);
+            border-radius: 8px;
+            padding: 0.2rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.2),
+                inset 0 0 10px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1.5px;
+            background: linear-gradient(45deg, var(--neon-cyan) 0%, var(--neon-pink) 50%, var(--neon-cyan) 100%);
+            mask: linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            animation: border-glow 3s linear infinite;
+            opacity: 0.7;
+        }
+
         input {
             width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 1.5rem 1.2rem 0.8rem;
+            background: transparent;
+            border: none;
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease-out;
         }
-        input:focus {
-            outline: none;
-            border-color: #1E88E5;
-            box-shadow: 0 0 10px rgba(30, 136, 229, 0.5);
+
+        .floating-label {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(45deg, var(--neon-cyan) 30%, var(--neon-pink) 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.8;
+            font-size: 0.9rem;
         }
+
+        input:focus~.floating-label,
+        input:not(:placeholder-shown)~.floating-label {
+            transform: translateY(-180%) scale(0.8);
+            opacity: 1;
+        }
+
         button {
             width: 100%;
-            padding: 15px;
-            margin-top: 10px;
+            padding: 1.2rem;
             border: none;
-            background: #1E88E5;
-            color: white;
-            font-size: 16px;
-            border-radius: 10px;
+            border-radius: 6px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(30, 136, 229, 0.2);
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 1.2rem;
         }
-        button:hover {
-            background: #1565C0;
-            transform: translateY(-3px);
+
+        #login-btn {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+            color: #000;
         }
-        button:active {
-            transform: translateY(1px);
-        }
+
         .google-btn {
-            background: #DB4437;
-            margin-top: 10px;
-            box-shadow: 0 10px 20px rgba(219, 68, 55, 0.2);
-            transition: all 0.3s ease;
+            background: linear-gradient(45deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
         }
-        .google-btn:hover {
-            background: #C1351E;
-            transform: translateY(-3px);
+
+        .google-btn::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23000" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="%23000" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="%23000" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="%23000" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>');
         }
-        .switch {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        .switch a {
-            color: #1E88E5;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .switch a:hover { 
-            text-decoration: underline; 
-        }
+
         #error-msg {
-            font-size: 14px;
-            margin-top: 10px;
-            color: red;
-            animation: fade-in 0.5s ease-out;
+            color: var(--neon-pink);
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+            min-height: 1.5rem;
         }
-        @keyframes pop-up {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
+
+        .switch {
+            text-align: center;
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.6);
         }
-        @keyframes fade-in {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+
+        .switch a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
         }
+
+        .switch a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--neon-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .switch a:hover::after {
+            width: 100%;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes bg-pulse {
+            0% {
+                background-size: 100% 100%;
+            }
+
+            100% {
+                background-size: 150% 150%;
+            }
+        }
+
+        @keyframes border-glow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                border-radius: 10px;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            input {
+                padding: 1.2rem 1rem 0.6rem;
+            }
+
+            .floating-label {
+                left: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        .input-container::before {
+            pointer-events: none;
+        }
+
+        input {
+            position: relative;
+            z-index: 2;
+        }
+
+       
+        input:focus {
+            outline: 2px solid var(--neon-pink);
+            outline-offset: 2px;
+        }
+        .container::before {
+        pointer-events: none; 
+    }
+
+    .input-container {
+        z-index: 2;
+        position: relative;
+    }
     </style>
 </head>
-<body>
 
+<body>
     <div class="container">
-        <h2>Login</h2>
-        <input type="email" id="login-email" placeholder="Email Address" required>
-        <input type="password" id="login-password" placeholder="Password" required>
-        <button id="login-btn">Login</button>
+        <h2>LOGIN PAGE</h2>
+        
+        <form id="login-form">
+            <div class="input-group">
+                <div class="input-container">
+                    <input type="email" id="login-email" required>
+                    <label class="floating-label">Email</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="input-container">
+                    <input type="password" id="login-password" required>
+                    <label class="floating-label">Password</label>
+                </div>
+            </div>
+
+            <button type="submit" id="login-btn">LOGIN</button>
+        </form>
+
         <p id="error-msg"></p>
-        <button class="google-btn" id="google-login">Login with Google</button>
-        <p class="switch">Don't have an account? <a href="signup.html">Sign Up</a></p>
+        <button class="google-btn" type="button" id="google-login">LOGIN WITH GOOGLE</button>
+        <p class="switch">NO PROFILE FOUND? <a href="./signup.html">CREATE PROFILE</a></p>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInWithRedirect
+        } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
         const firebaseConfig = {
-            apiKey: "AIzaSyBfC5u-d7EN7WC5GGpRkYR3C-foYCceeH8",
-            authDomain: "number-2-29adf.firebaseapp.com",
-            projectId: "number-2-29adf",
-            storageBucket: "number-2-29adf.firebasestorage.app",
-            messagingSenderId: "869200935152",
-            appId: "1:869200935152:web:6dcc395aed094721ae6a35",
-            measurementId: "G-VGRRNGYMFM"
-        };
-    
+    apiKey: "AIzaSyBfC5u-d7EN7WC5GGpRkYR3C-foYCceeH8",
+    authDomain: "number-2-29adf.firebaseapp.com",
+    projectId: "number-2-29adf",
+    storageBucket: "number-2-29adf.firebasestorage.app",
+    messagingSenderId: "869200935152",
+    appId: "1:869200935152:web:6dcc395aed094721ae6a35",
+    measurementId: "G-VGRRNGYMFM"
+  };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-    
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            // Do not redirect here. Let the login logic handle it.
-        });
-    
-        const loginBtn = document.getElementById("login-btn");
+
+        
+        const loginForm = document.getElementById("login-form");
         const googleLoginBtn = document.getElementById("google-login");
         const errorMsg = document.getElementById("error-msg");
-    
-        loginBtn.addEventListener("click", async () => {
+
+        const validateForm = () => {
             const email = document.getElementById("login-email").value.trim();
             const password = document.getElementById("login-password").value.trim();
-    
-            // Validate inputs
-            if (!email || !password) {
-                errorMsg.innerText = "Please fill in all fields.";
-                return;
+            let isValid = true;
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errorMsg.textContent = "Invalid email format";
+                isValid = false;
             }
-    
+
+            if (password.length < 6) {
+                errorMsg.textContent = "Password must be at least 6 characters";
+                isValid = false;
+            }
+
+            return isValid;
+        };
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errorMsg.textContent = "";
+            
+            if (!validateForm()) return;
+
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value.trim();
+
             try {
-                // Sign in with email and password
                 await signInWithEmailAndPassword(auth, email, password);
-                console.log("User signed in successfully.");
                 window.location.href = "dashboard.html";
             } catch (error) {
-                // Handle errors
-                console.error("Login Error:", error.message);
-                switch (error.code) {
-                    case "auth/invalid-email":
-                        errorMsg.innerText = "Invalid email address.";
-                        break;
-                    case "auth/user-not-found":
-                    case "auth/wrong-password":
-                        errorMsg.innerText = "Incorrect email or password.";
-                        break;
-                    default:
-                        errorMsg.innerText = "An error occurred. Please try again.";
+                handleAuthError(error);
+            }
+        });
+
+        googleLoginBtn.addEventListener("click", async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                if (error.code === "auth/popup-blocked") {
+                    await signInWithRedirect(auth, provider);
+                } else {
+                    handleAuthError(error);
                 }
             }
         });
-    
-        googleLoginBtn.addEventListener("click", async () => {
-            try {
-                // Sign in with Google
-                await signInWithPopup(auth, provider);
-                console.log("User signed in with Google successfully.");
-                window.location.href = "dashboard.html";
-            } catch (error) {
-                // Handle errors
-                console.error("Google Login Error:", error.message);
-                errorMsg.innerText = "Google login failed. Please try again.";
-            }
-        });
-    </script>
 
+        const handleAuthError = (error) => {
+            console.error("Authentication Error:", error);
+            const errorMessages = {
+                "auth/invalid-email": "Invalid email address",
+                "auth/user-disabled": "Account disabled",
+                "auth/user-not-found": "Account not found",
+                "auth/wrong-password": "Incorrect password",
+                "auth/too-many-requests": "Too many attempts, try later",
+                "auth/popup-closed-by-user": "Authorization cancelled",
+                "auth/network-request-failed": "Network error - check connection"
+            };
+            errorMsg.textContent = errorMessages[error.code] || "Authentication failed";
+        };
+    </script>
 </body>
+
 </html>
