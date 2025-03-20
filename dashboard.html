@@ -299,10 +299,10 @@
                         Posted: ${new Date(post.createdAt?.toDate()).toLocaleTimeString()}
                     </div>
                     <div class="post-actions">
-                        <button onclick="likePost('${doc.id}', '${auth.currentUser?.uid}')">ACKNOWLEDGE (${post.likes?.length || 0})</button>
+                        <button onclick="likePost('${doc.id}', '${auth.currentUser?.uid}')">LIKE (${post.likes?.length || 0})</button>
                         ${post.userId === auth.currentUser?.uid ? `
-                            <button onclick="deletePost('${doc.id}')">PURGE</button>
-                            <button onclick="editPost('${doc.id}')">MODIFY</button>
+                            <button onclick="deletePost('${doc.id}')">DELETE</button>
+                            <button onclick="editPost('${doc.id}')">EDIT</button>
                         ` : ""}
                     </div>
                 `;
@@ -324,7 +324,7 @@
         };
 
         window.deletePost = async (postId) => {
-            if (confirm("Confirm transmission purge?")) {
+            if (confirm("Confirm Delete Post?")) {
                 await deleteDoc(doc(db, "posts", postId));
                 loadPosts();
             }
