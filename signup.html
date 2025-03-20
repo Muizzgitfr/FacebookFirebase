@@ -1,234 +1,420 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Facebook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --neon-cyan: #00f7ff;
+            --neon-pink: #ff00ff;
+            --cyber-black: #0a0a0a;
+            --hologram-blue: #00a3ff;
+            --terminal-text: #20c20e;
+            --particle-sparkle: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #1E88E5, #42A5F5);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: center;
+            background: linear-gradient(45deg, #000 0%, #0a0a2e 100%);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            animation: bg-pulse 20s infinite alternate;
         }
+
         .container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 15px 50px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            background: linear-gradient(135deg,
+                    rgba(0, 247, 255, 0.15) 0%,
+                    rgba(255, 0, 255, 0.1) 50%,
+                    rgba(0, 247, 255, 0.15) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.3),
+                0 0 20px rgba(255, 0, 255, 0.2) inset;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            backdrop-filter: blur(10px);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 20%,
+                    var(--neon-cyan) 50%,
+                    transparent 80%);
+            animation: rotate 6s linear infinite;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        h2 {
+            color: var(--neon-cyan);
+            font-size: 2rem;
             text-align: center;
-            transform: scale(1);
-            animation: pop-up 0.5s ease-out;
+            margin-bottom: 1.8rem;
+            text-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+            font-weight: 300;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
         }
-        h2 { 
-            margin-bottom: 15px; 
-            color: #333; 
-            font-size: 24px;
-            font-weight: 600;
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.8rem;
+            z-index: 2;
         }
+
+        .input-container {
+            position: relative;
+            background: rgba(10, 10, 10, 0.4);
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.2),
+                inset 0 0 10px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-container:focus-within {
+            box-shadow: 0 0 25px rgba(0, 247, 255, 0.4),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1.5px;
+            background: linear-gradient(45deg, var(--neon-cyan) 0%, var(--neon-pink) 50%, var(--neon-cyan) 100%);
+            mask: linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            animation: border-glow 3s linear infinite;
+            opacity: 0.7;
+        }
+
         input {
             width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 1.5rem 1.2rem 0.8rem;
+            background: transparent;
+            border: none;
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease-out;
+            position: relative;
+            z-index: 2;
         }
+
         input:focus {
             outline: none;
-            border-color: #1E88E5;
-            box-shadow: 0 0 10px rgba(30, 136, 229, 0.5);
         }
+
+        .floating-label {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(45deg, var(--neon-cyan) 30%, var(--neon-pink) 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.8;
+            font-size: 0.9rem;
+            z-index: 1;
+        }
+
+        .floating-label.active {
+            transform: translateY(-180%) scale(0.8);
+            opacity: 1;
+        }
+
         button {
             width: 100%;
-            padding: 15px;
-            margin-top: 10px;
+            padding: 1.2rem;
             border: none;
-            background: #1E88E5;
-            color: white;
-            font-size: 16px;
-            border-radius: 10px;
+            border-radius: 6px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(30, 136, 229, 0.2);
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
         }
-        button:hover {
-            background: #1565C0;
-            transform: translateY(-3px);
+
+        #signup-btn {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+            color: #000;
         }
-        button:active {
-            transform: translateY(1px);
-        }
+
         .google-btn {
-            background: #DB4437;
-            margin-top: 10px;
-            box-shadow: 0 10px 20px rgba(219, 68, 55, 0.2);
-            transition: all 0.3s ease;
+            background: linear-gradient(45deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
         }
-        .google-btn:hover {
-            background: #C1351E;
-            transform: translateY(-3px);
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.4);
         }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #error-msg {
+            color: var(--neon-pink);
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+            z-index: 2;
+            position: relative;
+        }
+
         .switch {
-            margin-top: 20px;
-            font-size: 14px;
+            text-align: center;
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 2;
+            position: relative;
         }
+
         .switch a {
-            color: #1E88E5;
+            color: var(--neon-cyan);
             text-decoration: none;
-            font-weight: bold;
+            cursor: pointer;
         }
-        .switch a:hover { 
-            text-decoration: underline; 
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        #error-msg, #success-msg {
-            font-size: 14px;
-            margin-top: 10px;
-            animation: fade-in 0.5s ease-out;
+
+        @keyframes bg-pulse {
+            0% {
+                background-size: 100% 100%;
+            }
+            100% {
+                background-size: 150% 150%;
+            }
         }
-        #error-msg { color: red; }
-        #success-msg { color: green; }
-        @keyframes pop-up {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
+
+        @keyframes border-glow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
         }
-        @keyframes fade-in {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                border-radius: 10px;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            input {
+                padding: 1.2rem 1rem 0.6rem;
+            }
+
+            .floating-label {
+                left: 1rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
-<body>
 
+<body>
     <div class="container">
-        <h2>Sign Up</h2>
-        <input type="text" id="signup-name" placeholder="Full Name" required>
-        <input type="email" id="signup-email" placeholder="Email Address" required>
-        <input type="password" id="signup-password" placeholder="Password (Min 6 characters)" required>
-        <input type="text" id="signup-phone" placeholder="Phone Number" required>
-        <button id="signup-btn">Sign Up</button>
+        <h2>USER PROFILE</h2>
+
+        <div class="input-group">
+            <div class="input-container">
+                <input type="text" id="signup-name" required>
+                <label class="floating-label">Full Name</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-container">
+                <input type="email" id="signup-email" required>
+                <label class="floating-label">Email Address</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-container">
+                <input type="password" id="signup-password" required>
+                <label class="floating-label">Password</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-container">
+                <input type="tel" id="signup-phone" required pattern="[0-9]*">
+                <label class="floating-label">Phone Number</label>
+            </div>
+        </div>
+
+        <button id="signup-btn">CREATE PROFILE</button>
         <p id="error-msg"></p>
         <p id="success-msg"></p>
-        <button class="google-btn" id="google-signUp">Sign Up with Google</button>
-        <p class="switch">Already have an account? <a href="index.html">Login</a></p>
+
+        <button class="google-btn" id="google-signUp">
+            LOGIN WITH GOOGLE
+        </button>
+
+        <p class="switch">EXISTING PROFILE? <a href="index.html" class="neon-link">LOGIN</a></p>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-    
-        const firebaseConfig = {
-            apiKey: "AIzaSyBfC5u-d7EN7WC5GGpRkYR3C-foYCceeH8",
-            authDomain: "number-2-29adf.firebaseapp.com",
-            projectId: "number-2-29adf",
-            storageBucket: "number-2-29adf.firebasestorage.app",
-            messagingSenderId: "869200935152",
-            appId: "1:869200935152:web:6dcc395aed094721ae6a35",
-            measurementId: "G-VGRRNGYMFM"
-        };
-    
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-    
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            // Do not redirect here. Let the sign-up logic handle it.
-        });
-    
-        const signupBtn = document.getElementById("signup-btn");
-        const googleSignupBtn = document.getElementById("google-signUp");
-        const errorMsg = document.getElementById("error-msg");
-        const successMsg = document.getElementById("success-msg");
-    
-        function validateInputs(name, email, password, phone) {
-            if (!name || !email || !password || !phone) {
-                return "All fields are required.";
+                  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+            import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+            import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+            const firebaseConfig = {
+    apiKey: "AIzaSyBfC5u-d7EN7WC5GGpRkYR3C-foYCceeH8",
+    authDomain: "number-2-29adf.firebaseapp.com",
+    projectId: "number-2-29adf",
+    storageBucket: "number-2-29adf.firebasestorage.app",
+    messagingSenderId: "869200935152",
+    appId: "1:869200935152:web:6dcc395aed094721ae6a35",
+    measurementId: "G-VGRRNGYMFM"
+  };
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const provider = new GoogleAuthProvider();
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.floating-label').forEach(label => {
+                const input = label.previousElementSibling;
+                
+                const updateLabel = () => {
+                    const isActive = input.value.length > 0 || document.activeElement === input;
+                    label.classList.toggle('active', isActive);
+                };
+
+                input.addEventListener('input', updateLabel);
+                input.addEventListener('focus', updateLabel);
+                input.addEventListener('blur', updateLabel);
+                updateLabel(); 
+            });
+
+            const signupBtn = document.getElementById("signup-btn");
+            const googleSignupBtn = document.getElementById("google-signUp");
+            const errorMsg = document.getElementById("error-msg");
+            const successMsg = document.getElementById("success-msg");
+
+            function validateInputs(name, email, password, phone) {
+                if (!name || !email || !password || !phone) {
+                    return "All fields are required.";
+                }
+                if (!/\S+@\S+\.\S+/.test(email)) {
+                    return "Enter a valid email address.";
+                }
+                if (password.length < 6) {
+                    return "Password must be at least 6 characters.";
+                }
+                if (!/^\d+$/.test(phone)) {
+                    return "Phone number must contain only digits.";
+                }
+                return null;
             }
-            if (!/\S+@\S+\.\S+/.test(email)) {
-                return "Enter a valid email.";
-            }
-            if (password.length < 6) {
-                return "Password must be at least 6 characters.";
-            }
-            if (!/^\d+$/.test(phone)) {
-                return "Phone number must contain only digits.";
-            }
-            return null;
-        }
-    
-        signupBtn.addEventListener("click", async () => {
-            const name = document.getElementById("signup-name").value.trim();
-            const email = document.getElementById("signup-email").value.trim();
-            const password = document.getElementById("signup-password").value.trim();
-            const phone = document.getElementById("signup-phone").value.trim();
-    
-            const error = validateInputs(name, email, password, phone);
-            if (error) {
-                errorMsg.innerText = error;
-                successMsg.innerText = "";
-                return;
-            }
-    
-            try {
-                // Create user with email and password
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-    
-                // Save user data to Firestore
-                await setDoc(doc(db, "users", user.uid), { name, email, phone });
-    
-                // Show success message
-                successMsg.innerText = "Account created successfully!";
-                errorMsg.innerText = "";
-    
-                // Redirect to dashboard after 2 seconds
-                setTimeout(() => {
+
+            signupBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                const name = document.getElementById("signup-name").value.trim();
+                const email = document.getElementById("signup-email").value.trim();
+                const password = document.getElementById("signup-password").value.trim();
+                const phone = document.getElementById("signup-phone").value.trim();
+
+                const error = validateInputs(name, email, password, phone);
+                if (error) {
+                    errorMsg.textContent = error;
+                    successMsg.textContent = "";
+                    return;
+                }
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        name,
+                        email,
+                        phone,
+                        createdAt: new Date()
+                    });
+
+                    successMsg.textContent = "Profile activated successfully!";
+                    errorMsg.textContent = "";
+                    
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 2000);
+                } catch (error) {
+                    errorMsg.textContent = error.message;
+                    successMsg.textContent = "";
+                }
+            });
+
+            googleSignupBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    const user = result.user;
+                    
+                    await setDoc(doc(db, "users", user.uid), {
+                        name: user.displayName,
+                        email: user.email,
+                        phone: user.phoneNumber || "N/A",
+                        createdAt: new Date()
+                    }, { merge: true });
+
                     window.location.href = "index.html";
-                }, 2000);
-            } catch (error) {
-                // Handle errors
-                console.error("Sign-Up Error:", error.message);
-                errorMsg.innerText = "Error: " + error.message;
-                successMsg.innerText = "";
-            }
-        });
-    
-        googleSignupBtn.addEventListener("click", async () => {
-            try {
-                // Sign in with Google
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-    
-                // Save user data to Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    name: user.displayName,
-                    email: user.email,
-                    phone: user.phoneNumber || "N/A"
-                }, { merge: true });
-    
-                // Redirect to dashboard
-                window.location.href = "index.html";
-            } catch (error) {
-                // Handle errors
-                console.error("Google Sign-Up Error:", error.message);
-                errorMsg.innerText = "Google Sign-Up Error: " + error.message;
-                successMsg.innerText = "";
-            }
+                } catch (error) {
+                    errorMsg.textContent = error.message;
+                    successMsg.textContent = "";
+                }
+            });
         });
     </script>
-
 </body>
 </html>
